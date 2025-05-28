@@ -1,6 +1,6 @@
 wars:
   tomcat1:
-    - beka
+    - mcjmobileapi
     - hub
   tomcat2:
     - kutas

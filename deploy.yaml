@@ -8,6 +8,10 @@
 #key
   
   tasks:
+    - name: Pobierz datę wdrożenia
+      ansible.builtin.set_fact:
+        deploy_date: "{{ lookup('pipe', 'date +%Y-%m-%d_%H:%M:%S') }}"
+
     - name: Deploy war do tomcatow (tylko jeśli jest wersja)
       become: true
       get_url: 
@@ -18,5 +22,14 @@
         group: tomcat
         url_username: deployer
         url_password: deployer
+      loop: "{{ wars | dict2items | subelements('value') }}"
+      when: item.1 in versions
+
+    - name: Zapisz log do dziennika (/var/log/deployments.log)
+      become: true
+      lineinfile:
+        path: /var/log/deployments.log
+        create: yes
+        line: "{{ deploy_date }} - Aplikacja {{  item.1 }} wersja:  {{  versions[item.1]  }} wdrożona na {{ item.0.key  }} "
       loop: "{{ wars | dict2items | subelements('value') }}"
       when: item.1 in versions

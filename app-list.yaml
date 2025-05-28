@@ -1,0 +1,8 @@
+wars:
+  tomcat1:
+    - beka
+    - hub
+  tomcat2:
+    - kutas
+    - dydol
+    - sample

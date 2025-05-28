@@ -1,0 +1,22 @@
+- hosts: all
+  vars_files:
+    - app-list.yaml
+    - versions.yaml
+
+#item.0 = jaki tomcat
+#item.1 = jaka aplikajca .war
+#key
+  
+  tasks:
+    - name: Deploy war do tomcatow (tylko jeśli jest wersja)
+      become: true
+      get_url: 
+        url: "http://192.168.1.150:8081/repository/aplikacje-tomcat/{{ item.1 }}{{ versions[item.1] }}.war"
+        dest: "/opt/app/{{ item.0.key }}/webapps/{{ item.1 }}.war"
+        mode: '0644'
+        owner: tomcat
+        group: tomcat
+        url_username: deployer
+        url_password: deployer
+      loop: "{{ wars | dict2items | subelements('value') }}"
+      when: item.1 in versions
